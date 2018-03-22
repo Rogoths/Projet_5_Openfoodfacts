@@ -1,0 +1,10 @@
+CREATE DATABASE IF NOT EXISTS Projet_5_Openfoodfacts CHARACTER SET 'utf8';
+
+USE Projet_5_Openfoodfacts;
+
+CREATE TABLE Categories (
+  id SMALLINT AUTO_INCREMENT PRIMARY KEY,
+  Products VARCHAR(100) NOT NULL,
+  Name VARCHAR(100) NOT NULL,
+)
+ENGINE = InnoDB;

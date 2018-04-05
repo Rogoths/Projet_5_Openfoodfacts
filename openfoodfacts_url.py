@@ -1,8 +1,9 @@
-#!/env/bin/python3
+#!/usr/bin/python3
 # -*- coding: utf-8 -*
 #import json
 import requests
-from openfoodfacts_db import *
+from openfoodfacts_db import db_connection
+
 def openfoodfacts_categories():
     """
     Liste categories
@@ -12,18 +13,22 @@ def openfoodfacts_categories():
     data_raw = url.json()
     data_categories = data_raw["tags"]
     limit_categories = 0
-    liste_categories = []
     for categories in data_categories:
         if limit_categories < 10:
-            liste_categories.append(categories["name"])
+            name = str(categories["name"])
+            insert_categories_db(name)
             limit_categories += 1
 
-            print(liste_categories)
+def insert_categories_db(name):
 
+    con_db = db_connection()
+    con_db.query(
+        "INSERT INTO categories"
+        "VALUES (NULL, '{0}')".format(name)
+    )
+"""
 def openfoodfacts_produits(categorie):
-    """
-    liste Produits
-    """
+
     url = requests.get("https://fr.openfoodfacts.org/langue/francais/categorie/"+str(categorie)".json")
     data_raw = url.json()
     data_produits = data_raw["products"]
@@ -33,13 +38,6 @@ def openfoodfacts_produits(categorie):
 
 
     for id_produit in data_produits
-
-
-def openfoodfacts_produit():
-    """
-    Détails produit
-    """
-    url = requests.get("https://fr.openfoodfacts.org/api/v0/produit/"+str(id_produit)".json")
-    data_raw = url.json()
-    data_produit =
 """
+
+openfoodfacts_categories()

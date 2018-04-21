@@ -18,4 +18,5 @@ class Product:
         self.nom = ""
         self.marque = ""
         self.grade = ""
+        self.subtitution = ""
         self.url = ""

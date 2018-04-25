@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*
 #import json
 import requests
-from openfoodfacts_db import db_connection, insert_categories_db
+from Openfoodfacts_db import db_connection, insert_categories_db, insert_products_db
 from openfoodfacts_objects import Product
 
 def openfoodfacts_categories():
@@ -13,21 +13,22 @@ def openfoodfacts_categories():
     url = requests.get("https://fr.openfoodfacts.org/langue/francais/categories.json")
     data_raw = url.json()
     data_categories = data_raw["tags"]
-    for categories in data_categories[0:15]:
-        name_cat = str(categories["name"])
-        print(name_cat)
+    for categories in data_categories[0:10]:
+        name_cat = (categories["name"])
+
         insert_categories_db(name_cat)
 
-def openfoodfacts_produits():
+def openfoodfacts_produits(cat_id):
 
-    url = requests.get("https://fr.openfoodfacts.org/langue/francais/categorie/pizzas/2.json")
+    url = requests.get("https://fr.openfoodfacts.org/langue/francais/categorie/"+str(cat_id)+"/2.json")
     data_raw = url.json()
     data_produits = data_raw["products"]
     prod_dict = {}
     #list_id = []
+    product_number = 0
     for produits in data_produits:
-        name_prod = str(produits["product_name"])
-        id_prod = str(produits["_id"])
+        name_prod = (produits["product_name"])
+        id_prod = (produits["_id"])
         try:
             prod_dict[id_prod] = name_prod #dict for products with id
         except KeyError:
@@ -35,11 +36,11 @@ def openfoodfacts_produits():
     for prod_id, prod in prod_dict.items():
         #list_id.append(id) #use it for the product url
         print(prod_id, prod)
-    #insert_produits_db(id_prod, name_prod)
+        insert_products_db(prod_id, prod)
 
 def openfoodfacts_produit(product_id):
 
-    url = requests.get("https://fr.openfoodfacts.org/api/v0/product/"+str(id_product)+".json")
+    url = requests.get("https://fr.openfoodfacts.org/api/v0/product/"+str(product_id)+".json")
     data_raw = url.json()
     data_produit = data_raw["product"]
     product = Product()
@@ -59,5 +60,4 @@ def insert_produits_db(id_prod, name_prod):
     )
     con_db.commit()
 """
-
 openfoodfacts_categories()

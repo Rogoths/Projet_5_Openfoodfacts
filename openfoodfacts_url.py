@@ -20,13 +20,14 @@ def openfoodfacts_categories():
 
 def openfoodfacts_produits(cat_id):
 
-    url = requests.get("https://fr.openfoodfacts.org/langue/francais/categorie/"+str(cat_id)+"/2.json")
+    url = requests.get("https://fr.openfoodfacts.org/langue/francais/categorie/"+str(cat_id)+"/2.json")#page 2
     data_raw = url.json()
     data_produits = data_raw["products"]
     prod_dict = {}
     #list_id = []
-    product_number = 0
+    #product_number = 0
     for produits in data_produits:
+        
         name_prod = (produits["product_name"])
         id_prod = (produits["_id"])
         try:
@@ -56,8 +57,7 @@ def insert_produits_db(id_prod, name_prod):
 
     curs, con_db = db_connection() #tuples
     curs.execute(
-        "INSERT produits VALUES (%s, %s)", id_prod, name_prod
+        "INSERT produits VALUES (ean_produit=%s, nom%s)", id_prod, name_prod
     )
     con_db.commit()
 """
-openfoodfacts_categories()

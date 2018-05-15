@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*
 from openfoodfacts_url import openfoodfacts_categories, openfoodfacts_produits
-from Openfoodfacts_db import  create_db, db_create_table_categories, db_create_table_produits, show_categories_db, select_categories_db, del_products_table, del_categories_table
+from Openfoodfacts_db import  create_db, db_create_table_categories, db_create_table_produits, show_categories_db, select_categories_db, del_products_table, del_categories_table, select_substitute, show_products_db
 
 def display_choice():
     """ diplay choices for the user """
@@ -19,7 +19,7 @@ def select_choice():
 
 def category_choice():
     """ input for the category selection """
-    openfoodfacts_categories()
+
     user_answer = int(input("Quelle catégorie choisissez-vous?"))
     return user_answer
 
@@ -43,6 +43,8 @@ def main_screen():
     except:
         print("Table Produits déjà existante")
 
+    openfoodfacts_categories()
+
     first_screen = True
 
 
@@ -55,13 +57,22 @@ def main_screen():
         first_screen = False
     if main_answer == 1:
         selection_screen = True
-        while selection_screen:
 
+        while selection_screen:
             show_categories_db()
             answer = category_choice()
             cat_select = select_categories_db(answer)
             openfoodfacts_produits(cat_select)
-            show_products_db
+            selection_screen = False
+            substitut_screen = True
+
+            while substitut_screen:
+                show_products_db()
+                product_answer = product_choice()
+                select_substitute(answer)
+
+
+
 
 
     elif main_answer == 2:
@@ -71,6 +82,7 @@ def main_screen():
             del_products_table()
             del_categories_table()
             print("retour au menu principal")
+            del_screen = False
             first_screen = True
 
 

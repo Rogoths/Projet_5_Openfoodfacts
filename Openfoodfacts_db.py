@@ -46,13 +46,15 @@ def db_create_table_produits():
 
     curs.execute(
         "CREATE TABLE Produits ("
-        "id_produit VARCHAR(13) PRIMARY KEY,"
+        "id_produit INT AUTO_INCREMENT,"
+        "ean_produit VARCHAR(13),"
         "nom VARCHAR(100) NOT NULL,"
         "marque VARCHAR(40),"
         "grade CHAR(1),"
         "substitut_id CHAR(100),"
         "url VARCHAR(100),"
         "id_categorie INT,"
+        "PRIMARY KEY (id_produit),"
         "FOREIGN KEY (id_categorie) REFERENCES Categories(id_categorie));"
     )
     con_db.commit()
@@ -76,6 +78,7 @@ def show_categories_db():
     )
     data = curs.fetchall()
     con_db.commit()
+
     print("affichage des catégories -")
     print(data)
 
@@ -93,10 +96,10 @@ def select_categories_db(cat_choice):
 def insert_products_db(id_prod, name_prod):
     curs, con_db = db_connection() #tuples
     curs.execute(
-        "INSERT INTO Produits VALUES (id_produit=%s, nom=%s, NULL, NULL, NULL, NULL, NULL)",id_prod, name_prod
+        "INSERT INTO Produits VALUES (NULL, '%d', '%s', NULL, NULL, NULL, NULL, NULL)"#,id_prod, name_prod#use the two parameters
     )
+    data = curs.fetchall()
     con_db.commit()
-
 
 def show_products_db():
 
@@ -113,22 +116,26 @@ def show_products_db():
 def del_products_table():
     curs, con_db = db_connection() #tuples
     curs.execute(
-        "DROP TABLE Produits"
+        "DROP TABLE Produits;"
     )
     con_db.commit()
 
 def del_categories_table():
     curs, con_db = db_connection() #tuples
     curs.execute(
-        "DROP TABLE Categories"
+        "DROP TABLE Categories;"
     )
     con_db.commit()
-"""
+
 def select_substitute(id_categorie):
 
     curs, con_db = db_connection()
 
     curs.execute(
-        "SELECT id_produit, nom, marque, grade, url FROM Produits WHERE id_categorie = %s AND grade = "a"", id_categorie
-        )
-"""
+        "SELECT id_produit, ean_produit, nom, marque, grade, url FROM Produits WHERE id_categorie='%s' AND grade ='a'"
+    )
+    data = curs.fetchall()
+    con_db.commit()
+
+    print("affichage substituts -")
+    return data

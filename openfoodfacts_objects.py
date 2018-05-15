@@ -14,9 +14,10 @@ class Product:
     """class for object Product"""
 
     def __init__(self):
-        self.id_produit = 0
+        self.ean_produit = 0
         self.nom = ""
         self.marque = ""
         self.grade = ""
         self.subtitution = ""
         self.url = ""
+        self.categorie = ""

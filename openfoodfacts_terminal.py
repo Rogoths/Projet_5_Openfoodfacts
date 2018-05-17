@@ -55,39 +55,40 @@ def main_screen():
         main_answer = select_choice()
         print(main_answer)
         first_screen = False
-    if main_answer == 1:
-        selection_screen = True
+        if main_answer == 1:
+            selection_screen = True
 
-        while selection_screen:
-            show_categories_db()
-            answer = category_choice()
-            cat_select = select_categories_db(answer)
-            openfoodfacts_produits(cat_select)
-            selection_screen = False
-            substitut_screen = True
+            while selection_screen:
+                show_categories_db()
+                answer = category_choice()
+                cat_select = select_categories_db(answer)
+                openfoodfacts_produits(cat_select)
+                selection_screen = False
+                substitut_screen = True
 
-            while substitut_screen:
-                show_products_db()
-                product_answer = product_choice()
-                select_substitute(answer)
-
-
+                while substitut_screen:
+                    show_products_db()
+                    product_answer = product_choice()
+                    select_substitute(answer)
 
 
 
-    elif main_answer == 2:
-        del_screen = True
-        while del_screen:
-
-            del_products_table()
-            del_categories_table()
-            print("retour au menu principal")
-            del_screen = False
-            first_screen = True
 
 
-    else:
-        print("Veuillez entrer un chiffre valide")
+        elif main_answer == 2:
+            del_screen = True
+            while del_screen:
+
+                del_products_table()
+                del_categories_table()
+                print("retour au menu principal")
+                del_screen = False
+                first_screen = True
+                continue
+
+
+        else:
+            print("Veuillez entrer un chiffre valide")
 
 
 main_screen()

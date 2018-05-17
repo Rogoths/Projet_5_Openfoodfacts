@@ -27,7 +27,6 @@ def openfoodfacts_produits(cat_id):
     #list_id = []
     #product_number = 0
     for produits in data_produits:
-        
         name_prod = (produits["product_name"])
         id_prod = (produits["_id"])
         try:
@@ -57,7 +56,7 @@ def insert_produits_db(id_prod, name_prod):
 
     curs, con_db = db_connection() #tuples
     curs.execute(
-        "INSERT produits VALUES (ean_produit=%s, nom%s)", id_prod, name_prod
+        "INSERT produits VALUES (%s, %s)", id_prod, name_prod
     )
     con_db.commit()
 """

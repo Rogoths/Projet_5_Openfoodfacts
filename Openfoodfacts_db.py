@@ -94,11 +94,12 @@ def select_categories_db(cat_choice):
     return data
 
 def insert_products_db(id_prod, name_prod):
+    product_var = id_prod, name_prod
     curs, con_db = db_connection() #tuples
     curs.execute(
-        "INSERT INTO Produits VALUES (NULL, '%d', '%s', NULL, NULL, NULL, NULL, NULL)"#,id_prod, name_prod#use the two parameters
+        "INSERT INTO Produits VALUES (NULL, %s, %s, NULL, NULL, NULL, NULL, NULL)",product_var#use the two parameters
     )
-    data = curs.fetchall()
+
     con_db.commit()
 
 def show_products_db():
@@ -106,7 +107,7 @@ def show_products_db():
     curs, con_db = db_connection()
 
     curs.execute(
-        "SELECT id_produit, nom FROM Produits"
+        "SELECT id_produit, ean_produit, nom FROM Produits"
     )
     data = curs.fetchall()
     con_db.commit()

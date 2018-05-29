@@ -5,7 +5,8 @@ import pymysql.cursors
 #import records
 
 
-def db_connection():
+def db_connection():#select_substitute(answer)
+
     """
     Connect to the database
     """
@@ -35,6 +36,7 @@ def db_create_table_categories():
         "CREATE TABLE Categories ("
         "id_categorie INT AUTO_INCREMENT,"
         "nom VARCHAR(100) NOT NULL,"
+        "UNIQUE (nom),"
         "PRIMARY KEY(id_categorie));"
     )
     con_db.commit()
@@ -54,6 +56,7 @@ def db_create_table_produits():
         "substitut_id CHAR(100),"
         "url VARCHAR(100),"
         "id_categorie INT,"
+        "UNIQUE KEY (ean_produit),"
         "PRIMARY KEY (id_produit),"
         "FOREIGN KEY (id_categorie) REFERENCES Categories(id_categorie));"
     )
@@ -63,9 +66,12 @@ def db_create_table_produits():
 def insert_categories_db(name_cat):
 
     curs, con_db = db_connection() #tuples
-    curs.execute(
-        "INSERT INTO Categories VALUES (NULL, %s)",name_cat
-    )
+    try:
+        curs.execute(
+            "INSERT INTO Categories VALUES (NULL, %s) ON DUPLICATE KEY UPDATE id_categorie=NULL",name_cat
+        )
+    except Exception as e:
+        print(e)
     con_db.commit()
 
 
@@ -93,21 +99,49 @@ def select_categories_db(cat_choice):
     con_db.commit()
     return data
 
-def insert_products_db(id_prod, name_prod):
-    product_var = id_prod, name_prod
-    curs, con_db = db_connection() #tuples
-    curs.execute(
-        "INSERT INTO Produits VALUES (NULL, %s, %s, NULL, NULL, NULL, NULL, NULL)",product_var#use the two parameters
-    )
+def select_product_db(prod_choice):
 
+    curs, con_db = db_connection()
+
+    curs.execute(
+        "SELECT nom FROM Categories WHERE id_categorie=%s",prod_choice
+    )
+    data = curs.fetchall()
     con_db.commit()
+    return data
+
+def insert_products_db(id_prod, name_prod):
+    product_var = id_prod, name_prod, name_prod
+    curs, con_db = db_connection() #tuples
+    try:
+        curs.execute(
+            "INSERT INTO Produits VALUES (NULL, %s, %s, NULL, NULL, NULL, NULL, NULL) ON DUPLICATE KEY UPDATE nom=%s",product_var#use the two parameters
+        )
+    except Warning:
+        pass
+    con_db.commit()
+
+def insert_product_db(product_id, brand_prod, grade):
+
+    product_var = brand_prod, grade, product_id
+    curs, con_db = db_connection() #tuples
+    try:
+        curs.execute(
+            "UPDATE Produits SET marque=%s, grade=%s WHERE ean_produit=%s",product_var
+        )
+    except Exception as e:
+        print(e)
+    data = curs.fetchall()
+    con_db.commit()
+    print(data)
+
 
 def show_products_db():
 
     curs, con_db = db_connection()
 
     curs.execute(
-        "SELECT id_produit, ean_produit, nom FROM Produits"
+        "SELECT id_produit, ean_produit, nom, grade FROM Produits"
     )
     data = curs.fetchall()
     con_db.commit()

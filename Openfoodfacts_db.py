@@ -14,7 +14,8 @@ def db_connection():#select_substitute(answer)
     connexion = pymysql.connect(host='localhost',
                                 user='root',
                                 password='jojo',
-                                db='Projet_5_Openfoodfacts',)
+                                db='Projet_5_Openfoodfacts',
+                                charset='utf8')
     curs = connexion.cursor()
     return curs, connexion
 
@@ -86,7 +87,10 @@ def show_categories_db():
     con_db.commit()
 
     print("affichage des catégories -")
-    print(data)
+    for line in data:
+        print(str(line[0])+"-"+line[1])
+
+    return data
 
 def select_categories_db(cat_choice):
 
@@ -110,12 +114,12 @@ def select_product_db(prod_choice):
     con_db.commit()
     return data
 
-def insert_products_db(id_prod, name_prod):
-    product_var = id_prod, name_prod, name_prod
+def insert_products_db(id_prod, name_prod, brand_prod, grade_prod):
+    product_var = id_prod, name_prod, brand_prod, grade_prod, name_prod
     curs, con_db = db_connection() #tuples
     try:
         curs.execute(
-            "INSERT INTO Produits VALUES (NULL, %s, %s, NULL, NULL, NULL, NULL, NULL) ON DUPLICATE KEY UPDATE nom=%s",product_var#use the two parameters
+            "INSERT INTO Produits VALUES (NULL, %s, %s, %s, %s, NULL, NULL, NULL) ON DUPLICATE KEY UPDATE nom=%s",product_var#use the two parameters
         )
     except Warning:
         pass
@@ -146,7 +150,11 @@ def show_products_db():
     data = curs.fetchall()
     con_db.commit()
     print("affichage des produits -")
-    print(data)
+
+    for line in data:
+        print(str(line[0])+"-"+line[2])
+
+    return data
 
 def del_products_table():
     curs, con_db = db_connection() #tuples

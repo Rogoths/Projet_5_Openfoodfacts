@@ -17,15 +17,32 @@ def select_choice():
 
     return user_answer
 
-def category_choice():
+def category_choice(data):
     """ input for the category selection """
 
     user_answer = int(input("Quelle catégorie choisissez-vous?"))
+
+    liste_ids = [ elem[0] for elem in data ]
+    while user_answer not in liste_ids:
+        print("id inexistant - Veuillez reessayer")
+        user_answer = int(input("Quelle catégorie choisissez-vous?"))
+
+
+
+
+
+
     return user_answer
 
 def product_choice():
     """ input for the product selection """
     user_answer = int(input("Quelle produit choisissez-vous?"))
+
+    liste_ids = [ elem[1] for elem in data ]
+    while user_answer not in liste_ids:
+        print("id inexistant - Veuillez reessayer")
+        user_answer = int(input("Quelle produit choisissez-vous?"))
+
     return user_answer
 
 def main_screen():
@@ -61,8 +78,8 @@ def main_screen():
             selection_screen = True
 
             while selection_screen:
-                show_categories_db()
-                answer = category_choice()
+                data = show_categories_db()
+                answer = category_choice(data)
                 cat_select = select_categories_db(answer)
 
                 openfoodfacts_produits(cat_select)
@@ -76,7 +93,6 @@ def main_screen():
                     product_answer = product_choice()
                     prod_select = select_product_db(product_answer)
 
-                    openfoodfacts_produit(prod_select)
 
 
 
@@ -94,6 +110,7 @@ def main_screen():
                     print("Table Categories déjà supprimée -")
 
                 try:
+
                     db_create_table_categories()
                 except:
                     print("table Categorie déjà existante -")

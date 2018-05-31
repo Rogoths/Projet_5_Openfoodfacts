@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*
 #import json
 import requests
+
 from Openfoodfacts_db import db_connection, insert_categories_db, insert_products_db,insert_product_db
 from openfoodfacts_objects import Product
 
@@ -20,7 +21,7 @@ def openfoodfacts_categories():
 
 def openfoodfacts_produits(cat_id):
     nb_page = 1
-    while nb_page <= 40/20:
+    while nb_page <= 40/40:
         url = requests.get("https://fr.openfoodfacts.org/langue/francais/categorie/"+str(cat_id)+"/"+str(nb_page)+".json")#page 2
 
         data_raw = url.json()
@@ -30,25 +31,26 @@ def openfoodfacts_produits(cat_id):
         #product_number = 0
         nb_page = nb_page +1
         for produits in data_produits:
-            name_prod = (produits["product_name"])
-            id_prod = (produits["_id"])
-            brand_prod = (produits["brands"])
-            #grade_prod = (produits["nutrition_grades"])
+
             try:
-                prod_dict[id_prod] = name_prod#, brand_prod, grade_prod
-                #name, brand, grade = prod_dict[id_prod]
-                #print (grade_prod)
-                #prod_dict[id_prod] = brand_prod
-                #prod_dict[id_prod] = grade_prod
+                name_prod = (produits["product_name"])
+                id_prod = (produits["_id"])
+                brand_prod = (produits["brands"])
+                grade_prod = (produits["nutrition_grades"])
 
-                 #dict for products with id
-            except KeyError:
-                print("keyerror!")
+                prod_dict[id_prod] = name_prod, brand_prod, grade_prod
+
+            except Exception as e:
+                print(e)
+
         for prod_id, prod in prod_dict.items():
+            name, brand, grade = prod
 
-            #list_id.append(id) #use it for the product url
-            print(prod_id, prod)
-            insert_products_db(prod_id, prod)
+            try:
+                print(prod_id, name, brand, grade)
+                insert_products_db(prod_id, name, brand, grade)
+            except Exception as e:
+                print(e)
 
 def openfoodfacts_produit(product_id):
     url_prod = "https://fr.openfoodfacts.org/api/v0/product/"+str(product_id)
@@ -76,3 +78,5 @@ def insert_produits_db(id_prod, name_prod):
     )
     con_db.commit()
 """
+if __name__ == '__main__':
+    openfoodfacts_produits()

@@ -37,18 +37,22 @@ def openfoodfacts_produits(cat_id):
                 id_prod = (produits["_id"])
                 brand_prod = (produits["brands"])
                 grade_prod = (produits["nutrition_grades"])
+                detail_prod = (produits["generic_name_fr"])
+                url_prod = "https://fr.openfoodfacts.org/produit/"+str(produits["_id"])
+                cat_prod = cat_id[0][0]
 
-                prod_dict[id_prod] = name_prod, brand_prod, grade_prod
-
+                prod_dict[id_prod] = name_prod, brand_prod, grade_prod, detail_prod, url_prod, cat_prod
+                print(cat_prod)
             except Exception as e:
                 print(e)
 
         for prod_id, prod in prod_dict.items():
-            name, brand, grade = prod
+            name, brand, grade, detail, url, cat = prod
 
             try:
-                print(prod_id, name, brand, grade)
-                insert_products_db(prod_id, name, brand, grade)
+                #print(prod_id, name, brand, grade, detail, url, cat)
+                insert_products_db(prod_id, name, brand, grade, detail, url, cat)
+
             except Exception as e:
                 print(e)
 
@@ -58,8 +62,6 @@ def openfoodfacts_produit(product_id):
     data_raw = url.json()
 
     data_produit = data_raw["product"]
-    print(product_id)
-        #product = Product()
     nom = data_produit["product_name"]
     marque = data_produit["brands"]
     grade = data_produit["nutrition_grades"]
@@ -79,4 +81,4 @@ def insert_produits_db(id_prod, name_prod):
     con_db.commit()
 """
 if __name__ == '__main__':
-    openfoodfacts_produits()
+    openfoodfacts_produits("barres")

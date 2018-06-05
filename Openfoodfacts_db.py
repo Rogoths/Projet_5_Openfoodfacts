@@ -54,15 +54,41 @@ def db_create_table_produits():
         "nom VARCHAR(100) NOT NULL,"
         "marque VARCHAR(40),"
         "grade CHAR(1),"
-        "substitut_id CHAR(100),"
+        "details VARCHAR(100),"
         "url VARCHAR(100),"
-        "id_categorie INT,"
+        "substitut_id CHAR(100),"
+        "categorie VARCHAR(100),"
         "UNIQUE KEY (ean_produit),"
         "PRIMARY KEY (id_produit),"
-        "FOREIGN KEY (id_categorie) REFERENCES Categories(id_categorie));"
+        "CONSTRAINT fk_categorie_nom FOREIGN KEY (categorie) REFERENCES Categories(nom));"
     )
     con_db.commit()
     print("Création de la table - produits -")
+
+def db_create_table_subtituts():
+
+    curs, con_db = db_connection()
+
+    curs.execute(
+        "CREATE TABLE Substituts ("
+        "id_substitut INT AUTO_INCREMENT,"
+        "nom VARCHAR(100) NOT NULL,"
+        "UNIQUE (nom),"
+        "PRIMARY KEY(id_substitut));"
+    )
+    con_db.commit()
+    print("Création de la table - substituts -")
+
+def insert_substituts_db(name_sub):
+    curs, con_db = db_connection() #tuples
+    try:
+        curs.execute(
+            "INSERT INTO Substituts (nom) SELECT nom FROM Produits WHERE id_produit=%s",name_sub
+        )
+    except Exception as e:
+        print(e)
+    con_db.commit()
+
 
 def insert_categories_db(name_cat):
 
@@ -87,6 +113,7 @@ def show_categories_db():
     con_db.commit()
 
     print("affichage des catégories -")
+    print("-"*50)
     for line in data:
         print(str(line[0])+"-"+line[1])
 
@@ -114,12 +141,12 @@ def select_product_db(prod_choice):
     con_db.commit()
     return data
 
-def insert_products_db(id_prod, name_prod, brand_prod, grade_prod):
-    product_var = id_prod, name_prod, brand_prod, grade_prod, name_prod
+def insert_products_db(id_prod, name_prod, brand_prod, grade_prod, detail_prod, url_prod, cat_prod):
+    product_var = id_prod, name_prod, brand_prod, grade_prod, detail_prod, url_prod, cat_prod, name_prod
     curs, con_db = db_connection() #tuples
     try:
         curs.execute(
-            "INSERT INTO Produits VALUES (NULL, %s, %s, %s, %s, NULL, NULL, NULL) ON DUPLICATE KEY UPDATE nom=%s",product_var#use the two parameters
+            "INSERT INTO Produits VALUES (NULL, %s, %s, %s, %s, %s, %s, NULL, %s) ON DUPLICATE KEY UPDATE nom=%s",product_var#use the two parameters
         )
     except Warning:
         pass
@@ -137,7 +164,7 @@ def insert_product_db(product_id, brand_prod, grade):
         print(e)
     data = curs.fetchall()
     con_db.commit()
-    print(data)
+    #print(data)
 
 
 def show_products_db():
@@ -150,11 +177,19 @@ def show_products_db():
     data = curs.fetchall()
     con_db.commit()
     print("affichage des produits -")
+    print("-"*50)
 
     for line in data:
         print(str(line[0])+"-"+line[2])
 
     return data
+
+def del_substituts_table():
+    curs, con_db = db_connection() #tuples
+    curs.execute(
+        "DROP TABLE Substituts;"
+    )
+    con_db.commit()
 
 def del_products_table():
     curs, con_db = db_connection() #tuples
@@ -170,15 +205,52 @@ def del_categories_table():
     )
     con_db.commit()
 
-def select_substitute(id_categorie):
+def show_substituts(grade, categorie):
+    selection = grade, categorie
 
     curs, con_db = db_connection()
 
     curs.execute(
-        "SELECT id_produit, ean_produit, nom, marque, grade, url FROM Produits WHERE id_categorie='%s' AND grade ='a'"
+        "SELECT id_produit, ean_produit, nom, marque, grade, details, url FROM Produits WHERE grade<=%s AND categorie=%s ORDER BY grade ASC LIMIT 5",selection
     )
     data = curs.fetchall()
+    num_substitut = 1
+    code_sub = []
+    for line in data:
+
+        code_sub.append(str(line[0]))
+        print("substitut n°"+str(num_substitut)+" code "+str(line[0]))
+        print("-"*50)
+        print("\n-Nom : "+str(line[2])+"\n-Marque : "+str(line[3])+"\n-Nutriscore : "+str(line[4])+"\n-Description : "+str(line[5])+"\n-Lien : "+str(line[6]))
+        print("-"*50)
+
+        num_substitut += 1
     con_db.commit()
 
-    print("affichage substituts -")
-    return data
+    return code_sub
+
+def show_user_selection(selection):
+
+    curs, con_db = db_connection()
+
+    curs.execute(
+        "SELECT id_produit, ean_produit, nom, marque, grade, categorie, details, url FROM Produits WHERE id_produit=%s",selection
+    )
+    data = curs.fetchall()
+
+    print("affichage détails produits -")
+    for line in data:
+        grade = str(line[4])
+        categorie = str(line[5])
+        print("-"*50)
+        print("\n-Nom : "+str(line[2])+"\n-Marque : "+str(line[3])+"\n-Nutriscore : "+str(line[4])+"\n-Description : "+str(line[5])+"\n-Lien : "+str(line[6]))
+        print("-"*50)
+        selection_substitut = show_substituts(grade, categorie)
+
+    con_db.commit()
+
+    return selection_substitut
+
+if __name__ == '__main__':
+
+    db_create_table_subtituts()

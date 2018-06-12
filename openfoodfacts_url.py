@@ -3,12 +3,12 @@
 #import json
 import requests
 
-from Openfoodfacts_db import db_connection, insert_categories_db, insert_products_db,insert_product_db
+from Openfoodfacts_db import db_connection, insert_categories_db, insert_products_db
 from openfoodfacts_objects import Product
 
 def openfoodfacts_categories():
     """
-    Liste categories
+    read the categories from open food facts api and select some categorie
     """
 
     url = requests.get("https://fr.openfoodfacts.org/langue/francais/categories.json")
@@ -20,9 +20,11 @@ def openfoodfacts_categories():
         insert_categories_db(name_cat)
 
 def openfoodfacts_produits(cat_id):
+    """read open food facts api and select id name brand grade detail
+    from a selected categorie"""
     nb_page = 1
-    while nb_page <= 40/40:
-        url = requests.get("https://fr.openfoodfacts.org/langue/francais/categorie/"+str(cat_id)+"/"+str(nb_page)+".json")#page 2
+    while nb_page <= 40/20:
+        url = requests.get("https://fr.openfoodfacts.org/langue/francais/categorie/"+str(cat_id)+"/"+str(nb_page)+".json")
 
         data_raw = url.json()
         data_produits = data_raw["products"]
@@ -38,47 +40,24 @@ def openfoodfacts_produits(cat_id):
                 brand_prod = (produits["brands"])
                 grade_prod = (produits["nutrition_grades"])
                 detail_prod = (produits["generic_name_fr"])
+                stores_prod = (produits["stores"])
                 url_prod = "https://fr.openfoodfacts.org/produit/"+str(produits["_id"])
                 cat_prod = cat_id[0][0]
 
-                prod_dict[id_prod] = name_prod, brand_prod, grade_prod, detail_prod, url_prod, cat_prod
-                print(cat_prod)
+                prod_dict[id_prod] = name_prod, brand_prod, grade_prod, detail_prod, stores_prod, url_prod, cat_prod
+
             except Exception as e:
-                print(e)
+                pass
 
         for prod_id, prod in prod_dict.items():
-            name, brand, grade, detail, url, cat = prod
+            name, brand, grade, detail, stores, url, cat = prod
 
             try:
                 #print(prod_id, name, brand, grade, detail, url, cat)
-                insert_products_db(prod_id, name, brand, grade, detail, url, cat)
+                insert_products_db(prod_id, name, brand, grade, detail, stores, url, cat)
 
             except Exception as e:
                 print(e)
 
-def openfoodfacts_produit(product_id):
-    url_prod = "https://fr.openfoodfacts.org/api/v0/product/"+str(product_id)
-    url = requests.get(url_prod+".json")
-    data_raw = url.json()
-
-    data_produit = data_raw["product"]
-    nom = data_produit["product_name"]
-    marque = data_produit["brands"]
-    grade = data_produit["nutrition_grades"]
-
-    insert_product_db(product_id, marque, grade)
-        #product.url = "https://fr.openfoodfacts.org/produit/"+str(product_id)+str(product.nom)
-
-
-
-"""
-def insert_produits_db(id_prod, name_prod):
-
-    curs, con_db = db_connection() #tuples
-    curs.execute(
-        "INSERT produits VALUES (%s, %s)", id_prod, name_prod
-    )
-    con_db.commit()
-"""
 if __name__ == '__main__':
     openfoodfacts_produits("barres")

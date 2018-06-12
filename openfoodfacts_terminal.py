@@ -1,21 +1,22 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*
-from openfoodfacts_url import openfoodfacts_categories, openfoodfacts_produits, openfoodfacts_produit
-from Openfoodfacts_db import  create_db, db_create_table_categories, db_create_table_produits, show_categories_db, select_categories_db, del_products_table, del_categories_table, show_products_db, select_product_db, show_user_selection, insert_substituts_db, db_create_table_subtituts, del_substituts_table, insert_substituts_db
+from openfoodfacts_url import openfoodfacts_categories, openfoodfacts_produits
+from Openfoodfacts_db import  create_db, db_create_table_categories, db_create_table_produits, show_categories_db, select_categories_db, del_products_table, del_categories_table, show_products_db, select_product_db, show_user_selection, insert_substituts_db, db_create_table_subtituts, del_substituts_table, insert_substituts_db, show_substituts_db
 
 def display_choice():
     """ diplay choices for the user """
     print("-"*50)
     print("MENU PRINCIPAL")
     print("-"*50)
-    print("1 Trouver un aliment dans la base de données")
-    print("2 Suppression des tables")
+    print("1 - Trouver un aliment dans la base de données")
+    print("2 - Suppression des tables")
+    print("3 - Afficher les produits substituts sauvegardés")
 
     #return display_selection
 
 def select_choice():
     """ input for the first selection """
-    user_answer = int(input(":"))
+    user_answer = (input(":"))
 
     return user_answer
 
@@ -55,7 +56,7 @@ def substitut_choice():
     print("-"*50)
     print("MENU SUBSTITUT")
     print("-"*50)
-    user_answer = int(input("Que voulez-vous faire? \n 1-Revenir au menu principal \n 2-Sauvegarder un substitut?"))
+    user_answer = (input("Que voulez-vous faire? \n 1-Revenir au menu principal \n 2-Sauvegarder un substitut?"))
 
     return user_answer
 
@@ -65,13 +66,19 @@ def substitut_saved_choice(data):
     print("MENU SAVE SUBSTITUT")
     print("-"*50)
     user_answer = str(input("Entrez le code substitut : "))
-    liste_ids = [ elem[0] for elem in data ]
-
-    while user_answer not in liste_ids:
-        print("id inexistant - Veuillez reessayer")
+    id_sub_prod = data[user_answer]
+    try:
+        while id_sub_prod not in data.values():
+            print(str(id_sub_prod))
+            user_answer = str(input("Entrez le code substitut : "))
+                #while user_answer not in elem:
+                    #print("id inexistant - Veuillez reessayer")
+                    #user_answer = str(input("Entrez le code substitut : "))
+        print(str(id_sub_prod))
+        return id_sub_prod
+    except KeyError:
         user_answer = str(input("Entrez le code substitut : "))
-
-    return user_answer
+    #return str(id_sub_prod)
 
 def main_screen():
     """ main method """
@@ -89,10 +96,7 @@ def main_screen():
     except:
         print("Table Produits déjà existante")
 
-    #openfoodfacts_categories()
-
     first_screen = True
-
 
     while first_screen:
 
@@ -102,7 +106,7 @@ def main_screen():
         main_answer = select_choice()
         print(main_answer)
         first_screen = False
-        if main_answer == 1:
+        if main_answer == "1":
             selection_screen = True
 
             while selection_screen:
@@ -112,12 +116,11 @@ def main_screen():
 
                 openfoodfacts_produits(cat_select)
 
-                    #print("-----------")
                 selection_screen = False
                 product_screen = True
 
                 while product_screen:
-                    data_prod = show_products_db()
+                    data_prod = show_products_db(cat_select)
                     product_answer = product_choice(data_prod)
                     prod_select = show_user_selection(product_answer)
                     product_screen = False
@@ -126,29 +129,28 @@ def main_screen():
                     while substitut_screen:
                         substitut_answer = substitut_choice()
 
-
-                        if substitut_answer == 1:
+                        if substitut_answer == "1":
+                            substitut_screen = False
                             first_screen = True
-                        elif substitut_answer == 2:
+                        elif substitut_answer == "2":
 
                             substitut_save_screen = True
                             while substitut_save_screen:
-                                print(prod_select)
-                                sub_answer = substitut_saved_choice(prod_select)
-                                insert_substituts_db(sub_answer)
+                                try:
+                                    sub_answer = substitut_saved_choice(prod_select)
+                                    insert_substituts_db(sub_answer, product_answer)
+                                    substitut_save_screen = False
+                                    print("retour au menu principal")
+                                    First_screen = True
+                                except KeyError:
+                                    print("Veuillez entrer une réponse valide !")
+
                         else:
-                            substitut_screen = False
+
+                            print("Veuillez entrer une réponse valide !")
                             continue
 
-
-
-
-
-
-
-
-
-        elif main_answer == 2:
+        elif main_answer == "2":
             del_screen = True
             while del_screen:
                 try:
@@ -183,9 +185,15 @@ def main_screen():
                 first_screen = True
                 continue
 
-
+        elif main_answer =="3":
+            try:
+                show_substituts_db()
+                first_screen = True
+            except IndexError:
+                print("Pas de produits substitués - Retour au men principal")
+                first_screen = True
         else:
             print("Veuillez entrer un chiffre valide")
-
+            first_screen = True
 
 main_screen()

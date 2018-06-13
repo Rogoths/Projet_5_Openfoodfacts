@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*
 from openfoodfacts_url import openfoodfacts_categories, openfoodfacts_produits
-from Openfoodfacts_db import  create_db, db_create_table_categories, db_create_table_produits, show_categories_db, select_categories_db, del_products_table, del_categories_table, show_products_db, select_product_db, show_user_selection, insert_substituts_db, db_create_table_subtituts, del_substituts_table, insert_substituts_db, show_substituts_db
+from Openfoodfacts_db import  create_db, db_create_table_categories, db_create_table_produits, show_categories_db, select_categories_db, del_products_table, del_categories_table, show_products_db, show_user_selection, insert_substituts_db, db_create_table_subtituts, del_substituts_table, insert_substituts_db, show_substituts_db
 
 def display_choice():
     """ diplay choices for the user """
@@ -11,8 +11,6 @@ def display_choice():
     print("1 - Trouver un aliment dans la base de données")
     print("2 - Suppression des tables")
     print("3 - Afficher les produits substituts sauvegardés")
-
-    #return display_selection
 
 def select_choice():
     """ input for the first selection """

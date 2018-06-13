@@ -5,7 +5,7 @@ import pymysql.cursors
 #import records
 
 
-def db_connection():#select_substitute(answer)
+def db_connection():
 
     """
     Connect to the database
@@ -131,24 +131,13 @@ def select_categories_db(cat_choice):
     con_db.commit()
     return data
 
-def select_product_db(prod_choice):
-    """select the product name with the id_categorie selected by user"""
-    curs, con_db = db_connection()
-
-    curs.execute(
-        "SELECT nom FROM Categories WHERE id_categorie=%s",prod_choice
-    )
-    data = curs.fetchall()
-    con_db.commit()
-    return data
-
 def insert_products_db(id_prod, name_prod, brand_prod, grade_prod, detail_prod, stores_prod, url_prod, cat_prod):
     """insert the product values in database"""
     product_var = id_prod, name_prod, brand_prod, grade_prod, detail_prod, stores_prod, url_prod, cat_prod, name_prod
     curs, con_db = db_connection() #tuples
     try:
         curs.execute(
-            "INSERT INTO Produits VALUES (NULL, %s, %s, %s, %s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE nom=%s",product_var#use the two parameters
+            "INSERT INTO Produits VALUES (NULL, %s, %s, %s, %s, %s, %s, %s, %s) ON DUPLICATE KEY UPDATE nom=%s",product_var
         )
     except Warning:
         pass
@@ -176,7 +165,9 @@ def show_substituts_db():
     curs, con_db = db_connection()
 
     curs.execute(
-    "SELECT DISTINCT p1.id_produit, p1.ean_produit, p1.nom, p1.marque, p1.grade, p1.details, p1.magasins, p1.url,  p2.id_produit, p2.ean_produit, p2.nom, p2.marque, p2.grade, p2.details, p2.magasins, p2.url FROM Substituts s LEFT JOIN Produits p1 ON p1.id_produit = s.id_produit LEFT JOIN Produits p2 ON p2.id_produit = s.id_substitut"
+    """SELECT DISTINCT p1.id_produit, p1.ean_produit, p1.nom, p1.marque, p1.grade, p1.details, p1.magasins, p1.url,
+    p2.id_produit, p2.ean_produit, p2.nom, p2.marque, p2.grade, p2.details, p2.magasins, p2.url
+    FROM Substituts s LEFT JOIN Produits p1 ON p1.id_produit = s.id_produit LEFT JOIN Produits p2 ON p2.id_produit = s.id_substitut"""
     )
 
     data = curs.fetchall()
@@ -232,7 +223,6 @@ def show_substituts(grade, categorie):
     code_sub = []
     for line in data:
 
-        #code_sub.append(str(line[0]))
         code_sub = str(num_substitut)
         id_sub = str(line[0])
         dict_sub[code_sub] = id_sub

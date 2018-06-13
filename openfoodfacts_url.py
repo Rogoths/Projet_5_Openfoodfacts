@@ -33,8 +33,6 @@ def openfoodfacts_produits(cat_id):
         data_raw = url.json()
         data_produits = data_raw["products"]
         prod_dict = {}
-        #list_id = []
-        #product_number = 0
         nb_page = nb_page +1
         for produits in data_produits:
 
@@ -55,11 +53,8 @@ def openfoodfacts_produits(cat_id):
 
         for prod_id, prod in prod_dict.items():
             name, brand, grade, detail, stores, url, cat = prod
-
             try:
-                #print(prod_id, name, brand, grade, detail, url, cat)
                 insert_products_db(prod_id, name, brand, grade, detail, stores, url, cat)
-
             except Exception as e:
                 print(e)
 

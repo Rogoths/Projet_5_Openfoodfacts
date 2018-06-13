@@ -28,7 +28,7 @@ def category_choice(data):
 
     user_answer = input("Quelle catégorie choisissez-vous?")
 
-    liste_ids = [ str(elem[0]) for elem in data ]#convert element in string
+    liste_ids = [str(elem[0]) for elem in data]#convert element in string
 
     while user_answer not in liste_ids:
         print("id inexistant - Veuillez reessayer")
@@ -43,7 +43,7 @@ def product_choice(data):
     print("-"*50)
     user_answer = input("Quelle produit choisissez-vous?")
 
-    liste_ids = [ str(elem[0]) for elem in data ]
+    liste_ids = [str(elem[0]) for elem in data]
 
     while user_answer not in liste_ids:
         print("id inexistant - Veuillez reessayer")
@@ -71,14 +71,10 @@ def substitut_saved_choice(data):
         while id_sub_prod not in data.values():
             print(str(id_sub_prod))
             user_answer = str(input("Entrez le code substitut : "))
-                #while user_answer not in elem:
-                    #print("id inexistant - Veuillez reessayer")
-                    #user_answer = str(input("Entrez le code substitut : "))
-        print(str(id_sub_prod))
+
         return id_sub_prod
     except KeyError:
         user_answer = str(input("Entrez le code substitut : "))
-    #return str(id_sub_prod)
 
 def main_screen():
     """ main method """
@@ -185,7 +181,7 @@ def main_screen():
                 first_screen = True
                 continue
 
-        elif main_answer =="3":
+        elif main_answer == "3":
             try:
                 show_substituts_db()
                 first_screen = True

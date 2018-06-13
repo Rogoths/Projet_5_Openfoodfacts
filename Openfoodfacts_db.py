@@ -72,9 +72,8 @@ def db_create_table_subtituts():
 
     curs.execute(
         "CREATE TABLE Substituts ("
-        "id_substitut INT AUTO_INCREMENT,"
+        "id_substitut INT NOT NULL,"
         "id_produit INT NOT NULL,"
-        "PRIMARY KEY (id_substitut),"
         "CONSTRAINT fk_produit_id FOREIGN KEY (id_produit) REFERENCES Produits(id_produit));"
     )
     con_db.commit()
@@ -82,14 +81,13 @@ def db_create_table_subtituts():
 
 def insert_substituts_db(id_sub, prod_sub):
     """Insert in database the substituts"""
-    data_sub = id_sub, prod_sub, prod_sub
+    data_sub = id_sub, prod_sub
     curs, con_db = db_connection() #tuples
-    try:
-        curs.execute(
-            "INSERT INTO Substituts (id_substitut, id_produit) VALUES (%s, %s) ON DUPLICATE KEY UPDATE id_produit=%s",data_sub
-        )
-    except:
-        print("Produit possédant déjà un substitut !")
+
+    curs.execute(
+        "INSERT INTO Substituts (id_substitut, id_produit) VALUES (%s, %s)",data_sub
+    )
+
     con_db.commit()
 
 
@@ -178,20 +176,22 @@ def show_substituts_db():
     curs, con_db = db_connection()
 
     curs.execute(
-        "SELECT Produits.id_produit, ean_produit, nom, marque, grade, details, magasins, url FROM Produits INNER JOIN Substituts ON Produits.id_produit = Substituts.id_produit UNION SELECT Produits.id_produit, ean_produit, nom, marque, grade, details, magasins, url FROM Produits INNER JOIN Substituts ON Produits.id_produit = Substituts.id_substitut"
+    "SELECT DISTINCT p1.id_produit, p1.ean_produit, p1.nom, p1.marque, p1.grade, p1.details, p1.magasins, p1.url,  p2.id_produit, p2.ean_produit, p2.nom, p2.marque, p2.grade, p2.details, p2.magasins, p2.url FROM Substituts s LEFT JOIN Produits p1 ON p1.id_produit = s.id_produit LEFT JOIN Produits p2 ON p2.id_produit = s.id_substitut"
     )
-    data = curs.fetchall()
 
+    data = curs.fetchall()
     con_db.commit()
-    print("-"*50)
-    print("-"*50)
-    print("PRODUIT SUBSTITUÉ :")
-    print("\n-Produit substitué : "+str(data[1][2])+"\n-Marque : "+str(data[1][3])+"\n-Nutriscore : "+str(data[1][4])+"\n-Description : "+str(data[1][5])+"\n-Magasins : "+str(data[1][6])+"\n-Lien : "+str(data[1][7]))
-    print("-"*50)
-    print("SUBSTITUT DU PRODUIT :")
-    print("\n-Nom : "+str(data[0][2])+"\n-Marque : "+str(data[0][3])+"\n-Nutriscore : "+str(data[0][4])+"\n-Description : "+str(data[0][5])+"\n-Magasins : "+str(data[0][6])+"\n-Lien : "+str(data[0][7]))
-    print("-"*50)
-    print("-"*50)
+
+    for rows in data:
+        print("-"*50)
+        print("-"*50)
+        print("PRODUIT SUBSTITUÉ :")
+        print("\n-Nom : "+str(rows[2])+"\n-Marque : "+str(rows[3])+"\n-Nutriscore : "+str(rows[4])+"\n-Description : "+str(rows[5])+"\n-Magasins : "+str(rows[6])+"\n-Lien : "+str(rows[7]))
+        print("-"*50)
+        print("SUBSTITUT DU PRODUIT :")
+        print("\n-Nom : "+str(rows[10])+"\n-Marque : "+str(rows[11])+"\n-Nutriscore : "+str(rows[12])+"\n-Description : "+str(rows[13])+"\n-Magasins : "+str(rows[14])+"\n-Lien : "+str(rows[15]))
+        print("-"*50)
+        print("-"*50)
 
 def del_substituts_table():
     """delete substituts table"""
@@ -270,4 +270,4 @@ def show_user_selection(selection):
 
 if __name__ == '__main__':
 
-    db_create_table_subtituts()
+    show_substituts_db()

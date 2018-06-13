@@ -6,6 +6,10 @@ import requests
 from Openfoodfacts_db import db_connection, insert_categories_db, insert_products_db
 from openfoodfacts_objects import Product
 
+NB_PROD_PAGE = 20
+NB_PROD_REQUEST = 60
+NB_CAT_REQUEST = 20
+
 def openfoodfacts_categories():
     """
     read the categories from open food facts api and select some categorie
@@ -14,7 +18,7 @@ def openfoodfacts_categories():
     url = requests.get("https://fr.openfoodfacts.org/langue/francais/categories.json")
     data_raw = url.json()
     data_categories = data_raw["tags"]
-    for categories in data_categories[0:10]:
+    for categories in data_categories[0:NB_CAT_REQUEST]:
         name_cat = (categories["name"])
 
         insert_categories_db(name_cat)
@@ -23,7 +27,7 @@ def openfoodfacts_produits(cat_id):
     """read open food facts api and select id name brand grade detail
     from a selected categorie"""
     nb_page = 1
-    while nb_page <= 40/20:
+    while nb_page <= NB_PROD_REQUEST/NB_PROD_PAGE:
         url = requests.get("https://fr.openfoodfacts.org/langue/francais/categorie/"+str(cat_id)+"/"+str(nb_page)+".json")
 
         data_raw = url.json()
